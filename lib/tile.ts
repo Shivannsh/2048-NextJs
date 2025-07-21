@@ -1,8 +1,11 @@
 
+let nextId = 0;
+
 export class Tile {
   x: number;
   y: number;
   value: number;
+  id: number; // Added for unique identification
   previousPosition: { x: number; y: number } | null;
   mergedFrom: Tile[] | null;
 
@@ -10,6 +13,7 @@ export class Tile {
     this.x = position.x;
     this.y = position.y;
     this.value = value || 2;
+    this.id = nextId++; // Assign a unique ID
     this.previousPosition = null;
     this.mergedFrom = null; // Tracks tiles that merged together
   }

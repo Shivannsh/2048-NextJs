@@ -8,6 +8,7 @@ export class HTMLActuator {
   bestContainer: HTMLElement;
   messageContainer: HTMLElement;
   score: number;
+  tileElements: { [key: number]: HTMLElement }; // Map to store tile elements
 
   constructor() {
     this.tileContainer = document.querySelector('.tile-container')!;
@@ -15,19 +16,29 @@ export class HTMLActuator {
     this.bestContainer = document.querySelector('.best-container')!;
     this.messageContainer = document.querySelector('.game-message')!;
     this.score = 0;
+    this.tileElements = {}; // Initialize the map
   }
 
   actuate(grid: Grid, metadata: any) {
     window.requestAnimationFrame(() => {
-      this.clearContainer(this.tileContainer);
+      const currentTileElements: { [key: number]: HTMLElement } = {};
 
       grid.cells.forEach((column) => {
         column.forEach((cell) => {
           if (cell) {
-            this.addTile(cell);
+            this.addTile(cell, currentTileElements);
           }
         });
       });
+
+      // Remove old tiles
+      for (const id in this.tileElements) {
+        if (!(parseInt(id) in currentTileElements)) {
+          const element = this.tileElements[parseInt(id)];
+          this.tileContainer.removeChild(element);
+          delete this.tileElements[parseInt(id)];
+        }
+      }
 
       this.updateScore(metadata.score);
       this.updateBestScore(metadata.bestScore);
@@ -52,9 +63,25 @@ export class HTMLActuator {
     }
   }
 
-  addTile(tile: Tile) {
-    const wrapper = document.createElement('div');
-    const inner = document.createElement('div');
+  addTile(tile: Tile, currentTileElements: { [key: number]: HTMLElement }) {
+    let wrapper = this.tileElements[tile.id];
+    let inner: HTMLElement;
+
+    if (wrapper) {
+      // Update existing tile
+      inner = wrapper.querySelector('.tile-inner')!;
+      currentTileElements[tile.id] = wrapper;
+    } else {
+      // Create new tile
+      wrapper = document.createElement('div');
+      inner = document.createElement('div');
+      inner.classList.add('tile-inner');
+      wrapper.appendChild(inner);
+      this.tileContainer.appendChild(wrapper);
+      this.tileElements[tile.id] = wrapper;
+      currentTileElements[tile.id] = wrapper;
+    }
+
     const position = tile.previousPosition || { x: tile.x, y: tile.y };
     const positionClass = this.positionClass(position);
 
@@ -64,7 +91,6 @@ export class HTMLActuator {
 
     this.applyClasses(wrapper, classes);
 
-    inner.classList.add('tile-inner');
     inner.textContent = tile.value.toString();
 
     if (tile.previousPosition) {
@@ -77,15 +103,12 @@ export class HTMLActuator {
       this.applyClasses(wrapper, classes);
 
       tile.mergedFrom.forEach((merged) => {
-        this.addTile(merged);
+        this.addTile(merged, currentTileElements);
       });
     } else {
       classes.push('tile-new');
       this.applyClasses(wrapper, classes);
     }
-
-    wrapper.appendChild(inner);
-    this.tileContainer.appendChild(wrapper);
   }
 
   applyClasses(element: HTMLElement, classes: string[]) {
