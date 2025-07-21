@@ -4,8 +4,8 @@ import GameContainer from '@/components/GameContainer';
 export default function Home() {
   return (
     <div className="container">
-      <div className="heading">
-        <h1 className="title">2048</h1>
+      <div className="heading" id='overall-heading'>
+        <h1 className="title" id='2048-title'>2048</h1>
         <div className="scores-container">
           <div className="score-container">0</div>
           <div className="best-container">0</div>
