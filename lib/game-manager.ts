@@ -24,7 +24,7 @@ export class GameManager {
 
     this.inputManager.on('move', this.move.bind(this));
     this.inputManager.on('restart', this.restart.bind(this));
-    this.inputManager.on('keepPlaying', this.keepPlaying.bind(this));
+    this.inputManager.on('keepPlaying', this.keepPlayingHandler.bind(this));
 
     this.setup();
   }
@@ -35,7 +35,7 @@ export class GameManager {
     this.setup();
   }
 
-  keepPlaying() {
+  keepPlayingHandler() {
     this.keepPlaying = true;
     this.actuator.continueGame(); // Clear the game won/lost message
   }
