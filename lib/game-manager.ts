@@ -1,4 +1,3 @@
-
 import { Grid } from './grid';
 import { Tile } from './tile';
 
@@ -13,6 +12,7 @@ export class GameManager {
   over!: boolean;
   won!: boolean;
   keepPlaying!: boolean;
+  movesHistory: number[]; // Stores only the direction of each move
 
   constructor(size: number, InputManager: any, Actuator: any, StorageManager: any) {
     this.size = size; // Size of the grid
@@ -26,12 +26,15 @@ export class GameManager {
     this.inputManager.on('restart', this.restart.bind(this));
     this.inputManager.on('keepPlaying', this.keepPlayingHandler.bind(this));
 
+    this.movesHistory = [];
+
     this.setup();
   }
 
   restart() {
     this.storageManager.clearGameState();
     this.actuator.continueGame(); // Clear the game won/lost message
+    this.movesHistory = []; // Clear moves history on restart
     this.setup();
   }
 
@@ -53,12 +56,14 @@ export class GameManager {
       this.over = previousState.over;
       this.won = previousState.won;
       this.keepPlaying = previousState.keepPlaying;
+      this.movesHistory = previousState.movesHistory || [];
     } else {
       this.grid = new Grid(this.size);
       this.score = 0;
       this.over = false;
       this.won = false;
       this.keepPlaying = false;
+      this.movesHistory = [];
 
       this.addStartTiles();
     }
@@ -110,6 +115,7 @@ export class GameManager {
       over: this.over,
       won: this.won,
       keepPlaying: this.keepPlaying,
+      movesHistory: this.movesHistory, // Include movesHistory in serialization
     };
   }
 
@@ -173,6 +179,7 @@ export class GameManager {
     });
 
     if (moved) {
+      this.movesHistory.push(direction); // Record the move direction
       this.addRandomTile();
 
       if (!this.movesAvailable()) {
@@ -180,6 +187,9 @@ export class GameManager {
       }
 
       this.actuate();
+
+      // Log proverData after each move
+      console.log(JSON.stringify(this.getProverData(), null, 2));
     }
   }
 
@@ -247,5 +257,24 @@ export class GameManager {
 
   positionsEqual(first: { x: number; y: number }, second: { x: number; y: number }) {
     return first.x === second.x && first.y === second.y;
+  }
+
+  getProverData() {
+    const MAX_MOVES_CIRCUIT = 100; // Corresponds to MAX_MOVES in Noir circuit
+    const paddedMoves: number[] = new Array(MAX_MOVES_CIRCUIT).fill(0);
+
+    this.movesHistory.forEach((direction, index) => {
+      if (index < MAX_MOVES_CIRCUIT) {
+        paddedMoves[index] = direction;
+      }
+    });
+
+    return {
+      final_score: this.score,
+      total_moves: this.movesHistory.length,
+      moves: paddedMoves,
+      actual_moves: this.movesHistory.length,
+      actual_score: this.score,
+    };
   }
 }
