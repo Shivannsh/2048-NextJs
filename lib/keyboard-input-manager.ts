@@ -8,7 +8,7 @@ export class KeyboardInputManager {
   constructor() {
     this.events = {};
 
-    if (window.navigator.msPointerEnabled) {
+    if ("msPointerEnabled" in window.navigator && (window.navigator as any).msPointerEnabled) {
       this.eventTouchstart = 'MSPointerDown';
       this.eventTouchmove = 'MSPointerMove';
       this.eventTouchend = 'MSPointerUp';
@@ -81,13 +81,13 @@ export class KeyboardInputManager {
 
     gameContainer.addEventListener(this.eventTouchstart, (event: any) => {
       if (
-        (!window.navigator.msPointerEnabled && event.touches.length > 1) ||
+        (!("msPointerEnabled" in window.navigator && (window.navigator as any).msPointerEnabled) && event.touches.length > 1) ||
         (event.targetTouches && event.targetTouches.length > 1)
       ) {
         return; // Ignore if touching with more than 1 finger
       }
 
-      if (window.navigator.msPointerEnabled) {
+      if ("msPointerEnabled" in window.navigator && (window.navigator as any).msPointerEnabled) {
         touchStartClientX = event.pageX;
         touchStartClientY = event.pageY;
       } else {
@@ -104,7 +104,7 @@ export class KeyboardInputManager {
 
     gameContainer.addEventListener(this.eventTouchend, (event: any) => {
       if (
-        (!window.navigator.msPointerEnabled && event.touches.length > 0) ||
+        (!("msPointerEnabled" in window.navigator && (window.navigator as any).msPointerEnabled) && event.touches.length > 0) ||
         (event.targetTouches && event.targetTouches.length > 0)
       ) {
         return; // Ignore if still touching with one or more fingers
@@ -112,7 +112,7 @@ export class KeyboardInputManager {
 
       let touchEndClientX: number, touchEndClientY: number;
 
-      if (window.navigator.msPointerEnabled) {
+      if ("msPointerEnabled" in window.navigator && (window.navigator as any).msPointerEnabled) {
         touchEndClientX = event.pageX;
         touchEndClientY = event.pageY;
       } else {
