@@ -1,5 +1,8 @@
 
+'use client';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 import GameContainer from '@/components/GameContainer';
+import Leaderboard from '@/components/Leaderboard';
 
 export default function Home() {
   return (
@@ -9,6 +12,7 @@ export default function Home() {
         <div className="scores-container">
           <div className="score-container">0</div>
           <div className="best-container">0</div>
+          <ConnectButton />
         </div>
       </div>
 
@@ -20,6 +24,7 @@ export default function Home() {
       </div>
 
       <GameContainer />
+      <Leaderboard />
 
       <p className="game-explanation">
         <strong className="important">How to play:</strong> Use your{' '}
