@@ -95,6 +95,14 @@ export class GameManager {
 
     if (this.over) {
       this.storageManager.clearGameState();
+      // Log when the game is lost
+      console.log("Game Over! You lost.");
+    } else if (this.won && !this.keepPlaying) {
+      // Log when the game is won
+      console.log("Congratulations! You won!");
+    } else if (this.isGameTerminated()) {
+      // Log if the game is otherwise terminated (should cover all cases)
+      console.log("Game ended.");
     } else {
       this.storageManager.setGameState(this.serialize());
     }
@@ -260,19 +268,10 @@ export class GameManager {
   }
 
   getProverData() {
-    const MAX_MOVES_CIRCUIT = 100; // Corresponds to MAX_MOVES in Noir circuit
-    const paddedMoves: number[] = new Array(MAX_MOVES_CIRCUIT).fill(0);
-
-    this.movesHistory.forEach((direction, index) => {
-      if (index < MAX_MOVES_CIRCUIT) {
-        paddedMoves[index] = direction;
-      }
-    });
-
     return {
       final_score: this.score,
       total_moves: this.movesHistory.length,
-      moves: paddedMoves,
+      moves: this.movesHistory, // No padding, just the actual moves
       actual_moves: this.movesHistory.length,
       actual_score: this.score,
     };
