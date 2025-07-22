@@ -5,14 +5,15 @@ html,
 body {
   margin: 0;
   padding: 0;
-  background: #effaf8;
-  color: #4a4a4a;
+  background: #96BFA4;
+  color: #96BFA4;
   font-family: 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
   font-size: 18px;
 }
 
 body {
   margin: 0;
+  background-color: #96BFA4 !important;
 }
 
 

@@ -1,16 +1,30 @@
 h1.title {
-  font-size: 80px;
+  font-size: 40px;
   font-weight: bold;
   margin: 0;
-  display: block;
-  flex-grow: 1;
+  /* display: block; */
+  /* flex-grow: 1; */
   text-align: left;
+  margin-left: 25px;
+}
+
+body{
+  margin: 0;
+  background-color: #96BFA4 !important;
+  font-family: 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
+  color: #4a4a4a;
 }
 
 .scores-container {
   text-align: right;
   display: flex;
-  gap: 16px; /* Space between score and best */
+  background-color: white;
+  justify-content: space-around;
+  width: 80%;
+  margin-inline: auto;
+  align-items: center;
+  height: 100px;
+  border-radius: 15px;
 }
 
 .score-container,
@@ -25,7 +39,6 @@ h1.title {
   font-weight: bold;
   border-radius: 3px;
   color: #4a4a4a;
-  margin-top: 8px;
   text-align: center;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
@@ -97,16 +110,17 @@ hr {
 }
 
 .container {
-  width: 500px;
+  width: 50%;
   margin: 0 auto;
-  padding: 20px;
-  background: #effaf8;
-  border-radius: 10px;
+  
+  background: #CFE7D7;
+  border-radius: 10px 10px 10px 10px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  z-index: 2;
 }
 
 .game-container {
-  margin-top: 30px;
+ 
   position: relative;
   padding: 16px;
   cursor: default;
@@ -117,13 +131,15 @@ hr {
   -ms-user-select: none;
   -ms-touch-action: none;
   touch-action: none;
-  background: #e9f8f5;
+  background: #CFE7D7;
   border-radius: 8px;
   width: 500px;
   height: 500px;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .game-message {
@@ -206,6 +222,8 @@ hr {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  background-color: white;
+  border-radius: 10px 10px 0 0;
 }
 
 .grid-cell {
@@ -465,7 +483,6 @@ hr {
 .above-game {
   display: flex;
   justify-content: flex-end;
-  margin-bottom: 20px;
 }
 
 .restart-button {
@@ -480,6 +497,7 @@ hr {
   cursor: pointer;
   transition: background-color 0.3s ease;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-right: 25px;
 }
 
 .game-explanation {
