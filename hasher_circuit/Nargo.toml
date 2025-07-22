@@ -1,0 +1,6 @@
+[package]
+name = "hasher_circuit"
+type = "bin"
+authors = [""]
+
+[dependencies]
