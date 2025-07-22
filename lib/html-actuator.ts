@@ -9,6 +9,7 @@ export class HTMLActuator {
   messageContainer: HTMLElement;
   score: number;
   tileElements: { [key: number]: HTMLElement }; // Map to store tile elements
+  inputManager: any;
 
   constructor() {
     this.tileContainer = document.querySelector('.tile-container')!;
@@ -19,7 +20,8 @@ export class HTMLActuator {
     this.tileElements = {}; // Initialize the map
   }
 
-  actuate(grid: Grid, metadata: any) {
+  actuate(grid: Grid, metadata: any, inputManager?: any) {
+    this.inputManager = inputManager;
     window.requestAnimationFrame(() => {
       const currentTileElements: { [key: number]: HTMLElement } = {};
 
@@ -150,6 +152,13 @@ export class HTMLActuator {
 
     this.messageContainer.classList.add(type);
     this.messageContainer.getElementsByTagName('p')[0].textContent = message;
+
+    if (this.inputManager) {
+      const retryButton = this.messageContainer.querySelector('.retry-button');
+      if (retryButton) {
+        retryButton.addEventListener('click', this.inputManager.restart.bind(this.inputManager));
+      }
+    }
   }
 
   clearMessage() {
