@@ -1,5 +1,9 @@
-import { Grid } from './grid';
-import { Tile } from './tile';
+import { Grid } from "./grid";
+import { Tile } from "./tile";
+import { UltraHonkBackend, UltraPlonkBackend } from "@aztec/bb.js";
+import { Noir } from "@noir-lang/noir_js";
+import circuitJson from "circuit_2048/target/circuit_2048.json";
+import { Buffer } from "buffer";
 
 export class GameManager {
   size: number;
@@ -14,7 +18,12 @@ export class GameManager {
   keepPlaying!: boolean;
   movesHistory: number[]; // Stores only the direction of each move
 
-  constructor(size: number, InputManager: any, Actuator: any, StorageManager: any) {
+  constructor(
+    size: number,
+    InputManager: any,
+    Actuator: any,
+    StorageManager: any
+  ) {
     this.size = size; // Size of the grid
     this.inputManager = new InputManager();
     this.storageManager = new StorageManager();
@@ -22,9 +31,9 @@ export class GameManager {
 
     this.startTiles = 2;
 
-    this.inputManager.on('move', this.move.bind(this));
-    this.inputManager.on('restart', this.restart.bind(this));
-    this.inputManager.on('keepPlaying', this.keepPlayingHandler.bind(this));
+    this.inputManager.on("move", this.move.bind(this));
+    this.inputManager.on("restart", this.restart.bind(this));
+    this.inputManager.on("keepPlaying", this.keepPlayingHandler.bind(this));
 
     this.movesHistory = [];
 
@@ -97,9 +106,11 @@ export class GameManager {
       this.storageManager.clearGameState();
       // Log when the game is lost
       console.log("Game Over! You lost.");
+      this.generateProof(); // Call your proof generation
     } else if (this.won && !this.keepPlaying) {
       // Log when the game is won
       console.log("Congratulations! You won!");
+      this.generateProof(); // Call your proof generation
     } else if (this.isGameTerminated()) {
       // Log if the game is otherwise terminated (should cover all cases)
       console.log("Game ended.");
@@ -225,7 +236,10 @@ export class GameManager {
     return traversals;
   }
 
-  findFarthestPosition(cell: { x: number; y: number }, vector: { x: number; y: number }) {
+  findFarthestPosition(
+    cell: { x: number; y: number },
+    vector: { x: number; y: number }
+  ) {
     let previous;
     do {
       previous = cell;
@@ -263,17 +277,77 @@ export class GameManager {
     return false;
   }
 
-  positionsEqual(first: { x: number; y: number }, second: { x: number; y: number }) {
+  positionsEqual(
+    first: { x: number; y: number },
+    second: { x: number; y: number }
+  ) {
     return first.x === second.x && first.y === second.y;
   }
 
   getProverData() {
     return {
       final_score: this.score,
-      total_moves: this.movesHistory.length,
       moves: this.movesHistory, // No padding, just the actual moves
+      total_moves: this.movesHistory.length,
       actual_moves: this.movesHistory.length,
       actual_score: this.score,
     };
+  }
+
+  async generateProof(): Promise<any> {
+    console.log("Generating proof...");
+    const proverData = this.getProverData();
+
+    try {
+      const noirInput = {
+        final_score: proverData.final_score,
+        total_moves: proverData.total_moves,
+        actual_moves: proverData.actual_moves,
+        actual_score: proverData.actual_score,
+      };
+      console.log("Noir input:", noirInput);
+
+      const noir = new Noir(circuitJson as any);
+      const backend = new UltraPlonkBackend(circuitJson.bytecode as any, {
+        threads: 2,
+      });
+
+      // Generate witness and proof
+      const { witness } = await noir.execute(noirInput);
+      const { proof, publicInputs } = await backend.generateProof(witness);
+
+      const vk = await backend.getVerificationKey();
+
+      //   Send to backend for verification
+      const res = await fetch("/api/relayer", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          proof: proof,
+          publicInputs: publicInputs,
+          vk: Buffer.from(vk).toString("base64"),
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        console.log("✅ Proof verified successfully!");
+        if (data.txHash) {
+          console.log(data.txHash);
+        }
+      } else {
+        console.log("❌ Proof verification failed.");
+      }
+    } catch (error) {
+      console.error("Error generating proof or verifying:", error);
+      console.log(
+        "❌ Error generating or verifying proof. Please check your inputs and try again."
+      );
+    } finally {
+      console.log("Proof verification completed.");
+    }
   }
 }
