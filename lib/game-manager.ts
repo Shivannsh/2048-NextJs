@@ -3,7 +3,12 @@ import { Tile } from "./tile";
 import { UltraHonkBackend, UltraPlonkBackend } from "@aztec/bb.js";
 import { Noir } from "@noir-lang/noir_js";
 import circuitJson from "circuit_2048/target/circuit_2048.json";
+
 import { Buffer } from "buffer";
+
+import { getAccount } from '@wagmi/core'
+import { supabase } from "./database";
+import { config } from "@/app/providers";
 
 export class GameManager {
   size: number;
@@ -334,12 +339,36 @@ export class GameManager {
       const data = await res.json();
 
       if (res.ok) {
-        console.log("✅ Proof verified successfully!");
+        console.log('✅ Proof verified successfully!');
         if (data.txHash) {
           console.log(data.txHash);
+
+          const account = getAccount(config);
+          const userAddress = account.address;
+
+          if (userAddress) {
+            const { error } = await supabase
+              .from('leaderboard')
+              .insert([
+                { 
+                  address: userAddress, 
+                  score: this.score, 
+                  proof_url: `https://explorer.evm.zkevm.horizen.io/tx/${data.txHash}`,
+                  date: new Date().toISOString(),
+                },
+              ]);
+
+            if (error) {
+              console.error('Error inserting into Supabase:', error);
+            } else {
+              console.log('Leaderboard updated successfully!');
+            }
+          } else {
+            console.log('User address not found.');
+          }
         }
       } else {
-        console.log("❌ Proof verification failed.");
+        console.log('❌ Proof verification failed.');
       }
     } catch (error) {
       console.error("Error generating proof or verifying:", error);
