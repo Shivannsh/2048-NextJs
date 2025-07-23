@@ -9,7 +9,7 @@ export class HTMLActuator {
   messageContainer: HTMLElement;
   score: number;
   tileElements: { [key: number]: HTMLElement }; // Map to store tile elements
-  inputManager: any;
+  gameManager: any;
 
   constructor() {
     this.tileContainer = document.querySelector('.tile-container')!;
@@ -20,8 +20,8 @@ export class HTMLActuator {
     this.tileElements = {}; // Initialize the map
   }
 
-  actuate(grid: Grid, metadata: any, inputManager?: any) {
-    this.inputManager = inputManager;
+  actuate(grid: Grid, metadata: any, gameManager?: any) {
+    this.gameManager = gameManager;
     window.requestAnimationFrame(() => {
       const currentTileElements: { [key: number]: HTMLElement } = {};
 
@@ -151,7 +151,17 @@ export class HTMLActuator {
     const message = won ? 'You win!' : 'Game over!';
 
     this.messageContainer.classList.add(type);
-    this.messageContainer.getElementsByTagName('p')[0].textContent = message;
+        this.messageContainer.getElementsByTagName('p')[0].textContent = message;
+
+    if (type === 'game-over') {
+      const generateProofButton = document.createElement('button');
+      generateProofButton.innerText = 'Generate Proof';
+      generateProofButton.classList.add('generate-proof-button');
+      this.messageContainer.appendChild(generateProofButton);
+      generateProofButton.addEventListener('click', () => {
+        this.gameManager.generateProof();
+      });
+    }
 
     if (this.inputManager) {
       const retryButton = this.messageContainer.querySelector('.retry-button');
@@ -162,7 +172,9 @@ export class HTMLActuator {
   }
 
   clearMessage() {
-    this.messageContainer.classList.remove('game-won');
+        this.messageContainer.classList.remove('game-won');
     this.messageContainer.classList.remove('game-over');
   }
+
+ 
 }

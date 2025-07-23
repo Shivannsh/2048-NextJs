@@ -111,11 +111,10 @@ export class GameManager {
       this.storageManager.clearGameState();
       // Log when the game is lost
       console.log("Game Over! You lost.");
-      this.generateProof(); // Call your proof generation
     } else if (this.won && !this.keepPlaying) {
       // Log when the game is won
       console.log("Congratulations! You won!");
-      this.generateProof(); // Call your proof generation
+     
     } else if (this.isGameTerminated()) {
       // Log if the game is otherwise terminated (should cover all cases)
       console.log("Game ended.");
@@ -123,13 +122,13 @@ export class GameManager {
       this.storageManager.setGameState(this.serialize());
     }
 
-    this.actuator.actuate(this.grid, {
+      this.actuator.actuate(this.grid, {
       score: this.score,
       over: this.over,
       won: this.won,
       bestScore: this.storageManager.getBestScore(),
       terminated: this.isGameTerminated(),
-    }, this.inputManager);
+    }, this);
   }
 
   serialize() {
