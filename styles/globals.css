@@ -5,33 +5,17 @@ html,
 body {
   margin: 0;
   padding: 0;
-  background: #faf8ef;
-  color: #776e65;
+  background: #96BFA4;
+  color: #96BFA4;
   font-family: 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
   font-size: 18px;
 }
 
 body {
-  margin: 80px 0;
+  margin: 0;
+  background-color: #96BFA4 !important;
 }
 
-.heading:after {
-  content: '';
-  display: block;
-  clear: both;
-}
 
-heading{
-  display: block;
-    unicode-bidi: isolate;
-}
-
-h1.title {
-  font-size: 80px !important ;
-  font-weight: bold !important;
-  margin: 0 !important;
-  display: block !important;
-  float: left !important;
-}
 
 

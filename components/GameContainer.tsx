@@ -1,17 +1,21 @@
+"use client";
 
-'use client';
-
-import { useEffect } from 'react';
-import { GameManager } from '@/lib/game-manager';
-import { KeyboardInputManager } from '@/lib/keyboard-input-manager';
-import { HTMLActuator } from '@/lib/html-actuator';
-import { LocalStorageManager } from '@/lib/local-storage-manager';
+import { useEffect } from "react";
+import { GameManager } from "@/lib/game-manager";
+import { KeyboardInputManager } from "@/lib/keyboard-input-manager";
+import { HTMLActuator } from "@/lib/html-actuator";
+import { LocalStorageManager } from "@/lib/local-storage-manager";
 
 const GameContainer = () => {
   useEffect(() => {
     // Wait till the browser is ready to render the game (avoids glitches)
     window.requestAnimationFrame(() => {
-      new GameManager(4, KeyboardInputManager, HTMLActuator, LocalStorageManager);
+      new GameManager(
+        4,
+        KeyboardInputManager,
+        HTMLActuator,
+        LocalStorageManager
+      );
     });
   }, []);
 
@@ -20,8 +24,7 @@ const GameContainer = () => {
       <div className="game-message">
         <p></p>
         <div className="lower">
-          <a className="keep-playing-button">Keep going</a>
-          <a className="retry-button">Try again</a>
+          <a className="retry-button">New Game</a>
         </div>
       </div>
 
