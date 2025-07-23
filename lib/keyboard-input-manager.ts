@@ -70,9 +70,7 @@ export class KeyboardInputManager {
       }
     });
 
-    this.bindButtonPress('.retry-button', this.restart);
     this.bindButtonPress('.restart-button', this.restart);
-    this.bindButtonPress('.keep-playing-button', this.keepPlaying);
 
     let touchStartClientX: number, touchStartClientY: number;
     const gameContainer = document.getElementsByClassName(

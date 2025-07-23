@@ -4,6 +4,8 @@ import fs from "fs";
 import path from "path";
 
 const API_URL = "https://relayer-api.horizenlabs.io/api/v1";
+const vkey = JSON.parse(fs.readFileSync(path.join(process.cwd(), "circuit_2048", "vkey.json"), "utf8"));
+
 
 export async function POST(req: Request) {
   try {
@@ -28,7 +30,7 @@ export async function POST(req: Request) {
 
       const params = {
         proofType: "ultraplonk",
-        vkRegistered: false,
+        vkRegistered: true,
         proofOptions: {
           numberOfPublicInputs: 2,
         },
@@ -36,7 +38,7 @@ export async function POST(req: Request) {
           proof: Buffer.from(
             concatenatePublicInputsAndProof(body.publicInputs, proofUint8)
           ).toString("base64"),
-          vk: body.vk,
+          vk: vkey.hash,
         },
       };
       console.log(params);

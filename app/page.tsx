@@ -1,36 +1,40 @@
 
 'use client';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
 import GameContainer from '@/components/GameContainer';
-import Leaderboard from '@/components/Leaderboard';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+import Link from 'next/link';
 
 export default function Home() {
   return (
+    <>
+    <div className='connect-button-container'>
+      <ConnectButton />
+    </div>
     <div className="container">
-      <div className="heading" id='overall-heading'>
-        <h1 className="title" id='2048-title'>2048</h1>
-        <div className="scores-container">
-          <div className="score-container">0</div>
-          <div className="best-container">0</div>
-          <ConnectButton />
-        </div>
-      </div>
-
-      <div className="above-game">
-        <p className="game-intro">
-          Join the numbers and get to the <strong>2048 tile!</strong>
-        </p>
+      <div className="heading">
+        <h1 className="title">2048</h1>
+        <div className="above-game">
         <a className="restart-button">New Game</a>
       </div>
-
+      </div>
       <GameContainer />
-      <Leaderboard />
-
-      <p className="game-explanation">
-        <strong className="important">How to play:</strong> Use your{' '}
-        <strong>arrow keys</strong> to move the tiles. When two tiles with the same
-        number touch, they <strong>merge into one!</strong>
-      </p>
+      <div className="scores-container">
+          <div className="score-container">0</div>
+          <div className="leaderboard-button">
+            <Link href="/leaderboard">
+              <button>Leaderboard</button>
+            </Link>
+          </div>
+          <div className="best-container">0</div>
+        </div>
+      <div className="footer">
+        <p>
+          <strong className="important">How to play:</strong> Use your{' '}
+          <strong>arrow keys</strong> to move the tiles. When two tiles with the same
+          number touch, they <strong>merge into one!</strong>
+        </p>
+      </div>
     </div>
+    </>
   );
 }
