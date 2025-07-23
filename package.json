@@ -7,9 +7,9 @@
     "lib": "lib"
   },
   "scripts": {
-    "dev": "pnpm dev",
-    "build": "pnpm build",
-    "start": "pnpm start",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "test": "jest"
   },
   "keywords": [],
