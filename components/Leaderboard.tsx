@@ -6,6 +6,7 @@ import styles from './Leaderboard.module.css';
 import { supabase } from '@/lib/database';
 
 interface LeaderboardEntry {
+  id:number;
   rank: number;
   address: string;
   score: number;
@@ -66,7 +67,7 @@ const Leaderboard: React.FC = () => {
       try {
         const { data, error: supabaseError } = await supabase
           .from('leaderboard')
-          .select('address,score,proof_url,date') // Select date for date
+          .select('id,address,score,proof_url,date') // Select date for date
           .order('score', { ascending: false });
 
         if (supabaseError) {
@@ -77,6 +78,7 @@ const Leaderboard: React.FC = () => {
 
         // Map data to include rank and format date
         const formattedEntries: LeaderboardEntry[] = (data || []).map((entry, index) => ({
+          id: entry.id,
           rank: index + 1,
           address: entry.address,
           score: entry.score,

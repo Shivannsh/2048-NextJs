@@ -152,12 +152,6 @@ export class HTMLActuator {
 
     this.showProofMessage(message);
 
-    if (this.inputManager) {
-      const retryButton = this.messageContainer.querySelector('.retry-button');
-      if (retryButton) {
-        retryButton.addEventListener('click', this.inputManager.restart.bind(this.inputManager));
-      }
-    }
   }
 
   clearMessage() {

@@ -212,7 +212,7 @@ export class GameManager {
       this.actuate();
 
       // Log proverData after each move
-      console.log(JSON.stringify(this.getProverData(), null, 2));
+      // console.log(JSON.stringify(this.getProverData(), null, 2));
     }
   }
 
@@ -309,8 +309,6 @@ export class GameManager {
         actual_moves: proverData.actual_moves,
         actual_score: proverData.actual_score,
       };
-      console.log("Noir input:", noirInput);
-
       const noir = new Noir(circuitJson as any);
       const backend = new UltraPlonkBackend(circuitJson.bytecode as any, {
         threads: 2,

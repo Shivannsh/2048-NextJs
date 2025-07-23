@@ -18,7 +18,7 @@ export async function POST(req: Request) {
       );
     }
 
-    console.log(body);
+    // console.log(body);
 
     if (req.method !== "POST") {
       return new Response(JSON.stringify({ error: "Method not allowed" }), {
@@ -41,13 +41,13 @@ export async function POST(req: Request) {
           vk: vkey.hash,
         },
       };
-      console.log(params);
-      console.log(process.env.NEXT_PUBLIC_API_KEY);
+      // console.log(params);
+      // console.log(process.env.NEXT_PUBLIC_API_KEY);
       const requestResponse = await axios.post(
         `${API_URL}/submit-proof/${process.env.NEXT_PUBLIC_API_KEY}`,
         params
       );
-      console.log(requestResponse.data);
+      // console.log(requestResponse.data);
 
       if (requestResponse.data.optimisticVerify != "success") {
         console.error("Proof verification, check proof artifacts");
@@ -135,7 +135,7 @@ async function registerVk(vk: any) {
       `${API_URL}/register-vk/${process.env.NEXT_PUBLIC_API_KEY}`,
       params
     );
-    console.log(res);
+    // console.log(res);
     fs.writeFileSync(
       path.join(process.cwd(), "public", "multiply", "vkey.json"),
       JSON.stringify(res.data)
