@@ -299,7 +299,7 @@ export class GameManager {
   }
 
   async generateProof(): Promise<any> {
-    console.log("Generating proof...");
+    this.actuator.showProofMessage("Generating proof...");
     const proverData = this.getProverData();
 
     try {
@@ -322,6 +322,8 @@ export class GameManager {
 
       const vk = await backend.getVerificationKey();
 
+      this.actuator.showProofMessage("Verifying proof...");
+
       //   Send to backend for verification
       const res = await fetch("/api/relayer", {
         method: "POST",
@@ -338,7 +340,7 @@ export class GameManager {
       const data = await res.json();
 
       if (res.ok) {
-        console.log('✅ Proof verified successfully!');
+        this.actuator.showProofMessage('✅ Proof verified successfully!', `https://zkverify-testnet.subscan.io/extrinsic/${data.txHash}`);
         if (data.txHash) {
           console.log(data.txHash);
 
@@ -352,7 +354,7 @@ export class GameManager {
                 { 
                   address: userAddress, 
                   score: this.score, 
-                  proof_url: `https://explorer.evm.zkevm.horizen.io/tx/${data.txHash}`,
+                  proof_url: `https://zkverify-testnet.subscan.io/extrinsic/${data.txHash}`,
                   date: new Date().toISOString(),
                 },
               ]);
@@ -367,15 +369,15 @@ export class GameManager {
           }
         }
       } else {
-        console.log('❌ Proof verification failed.');
+        this.actuator.showProofMessage('❌ Proof verification failed.');
       }
     } catch (error) {
       console.error("Error generating proof or verifying:", error);
-      console.log(
+      this.actuator.showProofMessage(
         "❌ Error generating or verifying proof. Please check your inputs and try again."
       );
     } finally {
-      console.log("Proof verification completed.");
+      // No need to log here, as messages are shown in UI
     }
   }
 }

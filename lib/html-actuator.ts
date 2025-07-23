@@ -150,18 +150,7 @@ export class HTMLActuator {
     const type = won ? 'game-won' : 'game-over';
     const message = won ? 'You win!' : 'Game over!';
 
-    this.messageContainer.classList.add(type);
-        this.messageContainer.getElementsByTagName('p')[0].textContent = message;
-
-    if (type === 'game-over') {
-      const generateProofButton = document.createElement('button');
-      generateProofButton.innerText = 'Generate Proof';
-      generateProofButton.classList.add('generate-proof-button');
-      this.messageContainer.appendChild(generateProofButton);
-      generateProofButton.addEventListener('click', () => {
-        this.gameManager.generateProof();
-      });
-    }
+    this.showProofMessage(message);
 
     if (this.inputManager) {
       const retryButton = this.messageContainer.querySelector('.retry-button');
@@ -172,9 +161,34 @@ export class HTMLActuator {
   }
 
   clearMessage() {
-        this.messageContainer.classList.remove('game-won');
+    this.messageContainer.classList.remove('game-won');
     this.messageContainer.classList.remove('game-over');
+    this.messageContainer.innerHTML = '<p></p><div class="lower"></div>'; // Reset content
   }
 
- 
+  showProofMessage(message: string, url?: string) {
+    this.messageContainer.classList.add('game-over'); // Use game-over class for styling
+    this.messageContainer.getElementsByTagName('p')[0].textContent = message;
+
+    const lowerDiv = this.messageContainer.querySelector('.lower')!;
+    lowerDiv.innerHTML = ''; // Clear previous content
+
+    if (url) {
+      const link = document.createElement('a');
+      link.href = url;
+      link.textContent = 'View Proof on Explorer';
+      link.target = '_blank';
+      lowerDiv.appendChild(link);
+    } else if (this.gameManager) { // Only show button if gameManager is available
+      if (message === 'Game over!' || message === 'You win!') {
+        const generateProofButton = document.createElement('button');
+        generateProofButton.innerText = 'Generate Proof';
+        generateProofButton.classList.add('generate-proof-button');
+        lowerDiv.appendChild(generateProofButton);
+        generateProofButton.addEventListener('click', () => {
+          this.gameManager.generateProof();
+        });
+      }
+    }
+  }
 }
