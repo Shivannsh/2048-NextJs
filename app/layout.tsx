@@ -6,8 +6,11 @@ import { Providers } from "./providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "2048",
+  title: "ZKSlide",
   description: "Join the numbers and get to the 2048 tile!",
+  icons: {
+    icon: '/logo.svg',
+  },
 };
 
 export default function RootLayout({

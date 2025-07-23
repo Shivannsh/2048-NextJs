@@ -2,6 +2,7 @@
 'use client';
 import GameContainer from '@/components/GameContainer';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import Link from 'next/link';
 
 export default function Home() {
   return (
@@ -19,6 +20,11 @@ export default function Home() {
       <GameContainer />
       <div className="scores-container">
           <div className="score-container">0</div>
+          <div className="leaderboard-button">
+            <Link href="/leaderboard">
+              <button>Leaderboard</button>
+            </Link>
+          </div>
           <div className="best-container">0</div>
         </div>
       <div className="footer">
