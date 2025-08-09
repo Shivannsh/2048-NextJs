@@ -1,23 +1,33 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { GameManager } from "@/lib/game-manager";
 import { KeyboardInputManager } from "@/lib/keyboard-input-manager";
 import { HTMLActuator } from "@/lib/html-actuator";
 import { LocalStorageManager } from "@/lib/local-storage-manager";
+import { useAccount } from "wagmi";
 
 const GameContainer = () => {
+  const { address } = useAccount();
+  const gameManagerRef = useRef<GameManager | null>(null);
+  
   useEffect(() => {
-    // Wait till the browser is ready to render the game (avoids glitches)
-    window.requestAnimationFrame(() => {
-      new GameManager(
-        4,
-        KeyboardInputManager,
-        HTMLActuator,
-        LocalStorageManager
-      );
-    });
-  }, []);
+    // Create game instance only once
+    if (!gameManagerRef.current) {
+      window.requestAnimationFrame(() => {
+        gameManagerRef.current = new GameManager(
+          4,
+          KeyboardInputManager,
+          HTMLActuator,
+          LocalStorageManager,
+          address || ""
+        );
+      });
+    } else {
+      // Update address in existing game instance
+      gameManagerRef.current.address = address || "";
+    }
+  }, [address]);
 
   return (
     <div className="game-container">

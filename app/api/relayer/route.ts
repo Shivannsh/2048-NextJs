@@ -6,7 +6,6 @@ import path from "path";
 const API_URL = "https://relayer-api.horizenlabs.io/api/v1";
 const vkey = JSON.parse(fs.readFileSync(path.join(process.cwd(), "circuit_2048", "vkey.json"), "utf8"));
 
-
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -42,12 +41,12 @@ export async function POST(req: Request) {
         },
       };
       // console.log(params);
-      // console.log(process.env.NEXT_PUBLIC_API_KEY);
+
       const requestResponse = await axios.post(
         `${API_URL}/submit-proof/${process.env.NEXT_PUBLIC_API_KEY}`,
         params
       );
-      // console.log(requestResponse.data);
+      console.log(requestResponse.data);
 
       if (requestResponse.data.optimisticVerify != "success") {
         console.error("Proof verification, check proof artifacts");
@@ -119,32 +118,3 @@ function concatenatePublicInputsAndProof(
   return newProof;
 }
 
-async function registerVk(vk: any) {
-  const API_URL = "https://relayer-api.horizenlabs.io/api/v1";
-
-  const params = {
-    proofType: "ultraplonk",
-    vk: vk,
-    proofOptions: {
-      numberOfPublicInputs: 1,
-    },
-  };
-
-  try {
-    const res = await axios.post(
-      `${API_URL}/register-vk/${process.env.NEXT_PUBLIC_API_KEY}`,
-      params
-    );
-    // console.log(res);
-    fs.writeFileSync(
-      path.join(process.cwd(), "public", "multiply", "vkey.json"),
-      JSON.stringify(res.data)
-    );
-  } catch (error: any) {
-    console.log(error.response);
-    fs.writeFileSync(
-      path.join(process.cwd(), "public", "multiply", "vkey.json"),
-      JSON.stringify(error.response.data)
-    );
-  }
-}

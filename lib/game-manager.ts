@@ -1,6 +1,6 @@
 import { Grid } from "./grid";
 import { Tile } from "./tile";
-import { UltraHonkBackend, UltraPlonkBackend } from "@aztec/bb.js";
+import {  UltraPlonkBackend } from "@aztec/bb.js";
 import { Noir } from "@noir-lang/noir_js";
 import circuitJson from "circuit_2048/target/circuit_2048.json";
 
@@ -22,17 +22,20 @@ export class GameManager {
   won!: boolean;
   keepPlaying!: boolean;
   movesHistory: number[]; // Stores only the direction of each move
+  address: string; // Store the wallet address
 
   constructor(
     size: number,
     InputManager: any,
     Actuator: any,
-    StorageManager: any
+    StorageManager: any,
+    address: string
   ) {
     this.size = size; // Size of the grid
     this.inputManager = new InputManager();
     this.storageManager = new StorageManager();
     this.actuator = new Actuator();
+    this.address = address; // Store the wallet address
 
     this.startTiles = 2;
 
@@ -308,6 +311,7 @@ export class GameManager {
         total_moves: proverData.total_moves,
         actual_moves: proverData.actual_moves,
         actual_score: proverData.actual_score,
+        address: this.address,
       };
       const noir = new Noir(circuitJson as any);
       const backend = new UltraPlonkBackend(circuitJson.bytecode as any, {
