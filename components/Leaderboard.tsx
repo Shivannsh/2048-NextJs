@@ -31,13 +31,13 @@ const formatScore = (score: number) => {
 
 // Helper function to format date
 const formatDate = (dateString: string) => {
-  console.log('Raw date string:', dateString);
+  // console.log('Raw date string:', dateString);
   try {
     // Handle SQLite datetime format (YYYY-MM-DD HH:mm:ss) or ISO string
     const date = new Date(dateString.replace(' ', 'T'));
-    console.log('Parsed date:', date);
+    // console.log('Parsed date:', date);
     if (isNaN(date.getTime())) {
-      console.log('Invalid date detected');
+      // console.log('Invalid date detected');
       return 'N/A';
     }
     const formatted = date.toLocaleString('en-US', {
@@ -48,10 +48,10 @@ const formatDate = (dateString: string) => {
       minute: 'numeric',
       hour12: true
     });
-    console.log('Formatted date:', formatted);
+    // console.log('Formatted date:', formatted);
     return formatted;
   } catch (error) {
-    console.error('Error formatting date:', error);
+    // console.error('Error formatting date:', error);
     return 'N/A';
   }
 };
@@ -68,7 +68,8 @@ const Leaderboard: React.FC = () => {
         const { data, error: supabaseError } = await supabase
           .from('leaderboard')
           .select('id,address,score,proof_url,date') // Select date for date
-          .order('score', { ascending: false });
+          .order('score', { ascending: false })
+          .limit(100);
 
         if (supabaseError) {
           throw new Error(supabaseError.message);
