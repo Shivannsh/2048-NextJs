@@ -46,7 +46,7 @@ export async function POST(req: Request) {
         `${API_URL}/submit-proof/${process.env.NEXT_PUBLIC_API_KEY}`,
         params
       );
-      console.log(requestResponse.data);
+      // console.log(requestResponse.data);
 
       if (requestResponse.data.optimisticVerify != "success") {
         console.error("Proof verification, check proof artifacts");
@@ -58,20 +58,20 @@ export async function POST(req: Request) {
           const jobStatusResponse = await axios.get(
             `${API_URL}/job-status/${process.env.NEXT_PUBLIC_API_KEY}/${requestResponse.data.jobId}`
           );
-          console.log("Job Status: ", jobStatusResponse.data);
+          // console.log("Job Status: ", jobStatusResponse.data);
           if (jobStatusResponse.data.status === "IncludedInBlock") {
-            console.log("Job Included in Block successfully");
+            // console.log("Job Included in Block successfully");
             return new Response(JSON.stringify(jobStatusResponse.data), {
               status: 200,
             });
           } else {
-            console.log("Job status: ", jobStatusResponse.data.status);
-            console.log("Waiting for job to finalize...");
+            // console.log("Job status: ", jobStatusResponse.data.status);
+            // console.log("Waiting for job to finalize...");
             await new Promise((resolve) => setTimeout(resolve, 5000)); // Wait for 5 seconds before checking again
           }
         } catch (error: any) {
           if (error.response.status === 503) {
-            console.log("Service Unavailable, retrying...");
+            // console.log("Service Unavailable, retrying...");
             await new Promise((resolve) => setTimeout(resolve, 5000)); // Wait for 5 seconds before retrying
           }
         }

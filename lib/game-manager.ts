@@ -344,7 +344,7 @@ export class GameManager {
       if (res.ok) {
         this.actuator.showProofMessage('✅ Proof verified successfully!', `https://zkverify-testnet.subscan.io/extrinsic/${data.txHash}`);
         if (data.txHash) {
-          console.log(data.txHash);
+          // console.log(data.txHash);
 
           const account = getAccount(config);
           const userAddress = account.address;
