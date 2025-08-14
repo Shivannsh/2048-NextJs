@@ -67,7 +67,7 @@ export class GameManager {
   setup() {
     const previousState = this.storageManager.getGameState();
 
-    if (previousState) {
+    if (previousState && this.validateGameState(previousState)) {
       this.grid = new Grid(previousState.grid.size, previousState.grid.cells);
       this.score = previousState.score;
       this.over = previousState.over;
@@ -75,6 +75,12 @@ export class GameManager {
       this.keepPlaying = previousState.keepPlaying;
       this.movesHistory = previousState.movesHistory || [];
     } else {
+      // Invalid or no previous state - start fresh
+      if (previousState) {
+        console.warn('🚨 Invalid game state detected - starting new game');
+        this.storageManager.clearGameState();
+      }
+      
       this.grid = new Grid(this.size);
       this.score = 0;
       this.over = false;
@@ -86,6 +92,73 @@ export class GameManager {
     }
 
     this.actuate();
+  }
+
+  // Validate game state integrity
+  validateGameState(state: any): boolean {
+    try {
+      // Basic structure validation
+      if (!state.grid || !state.grid.cells || typeof state.score !== 'number') {
+        return false;
+      }
+
+      // Score validation - reasonable limits
+      if (state.score < 0 || state.score > 1000000) {
+        console.warn('🚨 Suspicious score detected:', state.score);
+        return false;
+      }
+
+      // Moves validation
+      if (state.movesHistory) {
+        if (state.movesHistory.length > 10000) { // Max reasonable moves
+          console.warn('🚨 Too many moves detected:', state.movesHistory.length);
+          return false;
+        }
+
+        // Validate move directions (0-3)
+        for (let move of state.movesHistory) {
+          if (move < 0 || move > 3) {
+            console.warn('🚨 Invalid move direction:', move);
+            return false;
+          }
+        }
+      }
+
+      // Grid validation
+      const grid = state.grid;
+      if (grid.size !== 4 || !Array.isArray(grid.cells)) {
+        return false;
+      }
+
+      // Validate grid dimensions
+      if (grid.cells.length !== 4 || grid.cells.some(row => !Array.isArray(row) || row.length !== 4)) {
+        return false;
+      }
+
+      // Validate tile values (must be powers of 2)
+      let calculatedScore = 0;
+      for (let row of grid.cells) {
+        for (let cell of row) {
+          if (cell !== null) {
+            if (!cell.value || !this.isPowerOfTwo(cell.value) || cell.value < 2 || cell.value > 131072) {
+              console.warn('🚨 Invalid tile value:', cell.value);
+              return false;
+            }
+            // Rough score calculation for validation
+            calculatedScore += cell.value;
+          }
+        }
+      }
+      return true;
+    } catch (error) {
+      console.warn('🚨 Error validating game state:', error);
+      return false;
+    }
+  }
+
+  // Helper function to check if number is power of 2
+  isPowerOfTwo(n: number): boolean {
+    return n > 0 && (n & (n - 1)) === 0;
   }
 
   addStartTiles() {
@@ -302,6 +375,36 @@ export class GameManager {
   }
 
   async generateProof(): Promise<any> {
+    // Enhanced security checks
+    if (!this.isGameTerminated()) {
+      this.actuator.showProofMessage("❌ Game must be finished before generating proof.");
+      return;
+    }
+    
+    if (this.movesHistory.length === 0) {
+      this.actuator.showProofMessage("❌ No moves recorded. Play the game first.");
+      return;
+    }
+    
+    if (this.score <= 0) {
+      this.actuator.showProofMessage("❌ Invalid score detected.");
+      return;
+    }
+
+    // Validate current game state integrity
+    const currentState = this.serialize();
+    if (!this.validateGameState(currentState)) {
+      this.actuator.showProofMessage("❌ Game state validation failed. Possible tampering detected.");
+      return;
+    }
+
+    // Check for localStorage tampering
+    const storedState = this.storageManager.getGameState();
+    if (storedState && JSON.stringify(currentState) !== JSON.stringify(storedState)) {
+      this.actuator.showProofMessage("❌ Game state mismatch detected. Please restart the game.");
+      return;
+    }
+    
     this.actuator.showProofMessage("Generating proof...");
     const proverData = this.getProverData();
 
@@ -344,7 +447,7 @@ export class GameManager {
       if (res.ok) {
         this.actuator.showProofMessage('✅ Proof verified successfully!', `https://zkverify-testnet.subscan.io/extrinsic/${data.txHash}`);
         if (data.txHash) {
-          // console.log(data.txHash);
+          console.log(data.txHash);
 
           const account = getAccount(config);
           const userAddress = account.address;
